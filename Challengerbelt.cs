@@ -99,7 +99,7 @@ namespace Blunderbeast
             return debrisObject;
         }
 
-        protected override void OnDestroy()
+        public override void OnDestroy()
         {
             GameManager.Instance.OnNewLevelFullyLoaded -= this.ChestReward;
             base.OnDestroy();

@@ -71,7 +71,7 @@ namespace Blunderbeast
 
         private bool ActiveVFX;
 
-        protected override void Update()
+        public override void Update()
         {
             if (Owner)
             {

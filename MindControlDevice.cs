@@ -72,7 +72,7 @@ namespace Blunderbeast
         }
 
 
-        protected override void DoEffect(PlayerController user)
+        public override void DoEffect(PlayerController user)
         {
             AkSoundEngine.PostEvent("Play_obj_computer_break_01", base.gameObject);
             HandleMindControlEffect();

@@ -45,7 +45,7 @@ namespace Blunderbeast
             base.Pickup(player);
         }
 
-        protected override void DoEffect(PlayerController user)
+        public override void DoEffect(PlayerController user)
         {
             StatModifier statModifier = new StatModifier();
             statModifier.statToBoost = PlayerStats.StatType.Curse;

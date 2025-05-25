@@ -56,7 +56,7 @@ namespace Blunderbeast
             yield break;
         }
 
-        protected override void DoEffect(PlayerController user)
+        public override void DoEffect(PlayerController user)
         {
 
             if (user.CurrentGun.CurrentAmmo == 0)

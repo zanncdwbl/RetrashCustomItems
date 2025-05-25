@@ -118,7 +118,7 @@ namespace Blunderbeast
             base.ClearCooldowns();
         }
 
-        protected override void DoEffect(PlayerController user)
+        public override void DoEffect(PlayerController user)
         {
             AkSoundEngine.PostEvent("Play_WPN_Life_Orb_Capture_01", base.gameObject);
             RevealSecretRooms();

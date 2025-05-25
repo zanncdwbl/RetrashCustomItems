@@ -92,7 +92,7 @@ namespace Blunderbeast
             }
         }
 
-        protected override void OnPreDrop(PlayerController user)
+        public override void OnPreDrop(PlayerController user)
         {
             hasSynergy = false;
 
@@ -144,7 +144,7 @@ namespace Blunderbeast
         }
 
 
-        protected override void DoEffect(PlayerController user)
+        public override void DoEffect(PlayerController user)
         {
             OnCooldown = true;
             GameManager.Instance.StartCoroutine(NadeCooldown());

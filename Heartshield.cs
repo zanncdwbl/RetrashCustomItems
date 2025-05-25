@@ -50,7 +50,7 @@ namespace Blunderbeast
             base.Pickup(player);      
         }
 
-        protected override void Update()
+        public override void Update()
         {
             if (Owner)
             {

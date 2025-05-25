@@ -58,7 +58,7 @@ namespace Blunderbeast
             return debrisObject;
         }
 
-        protected override void OnDestroy()
+        public override void OnDestroy()
         {
             if (Owner)
             {
@@ -69,7 +69,7 @@ namespace Blunderbeast
             base.OnDestroy();
         }
 
-        protected override void Update()
+        public override void Update()
         {
             if (Owner)
             {

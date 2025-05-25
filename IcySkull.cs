@@ -125,9 +125,9 @@ namespace Blunderbeast
                     aiActor.ApplyEffect(frostfreeze, 5f, null);
                 }
             }
-        }       
+        }
 
-        protected override void Update()
+        public override void Update()
         {
             if (Owner)
             {              

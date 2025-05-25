@@ -49,7 +49,7 @@ namespace Blunderbeast
             base.Pickup(player);
         }
 
-        protected override void DoEffect(PlayerController user)
+        public override void DoEffect(PlayerController user)
         {
             if (GameManager.Instance.CurrentLevelOverrideState == GameManager.LevelOverrideState.END_TIMES)
             {
@@ -73,7 +73,7 @@ namespace Blunderbeast
             user.healthHaver.OnDamaged += this.PlayerTookDamageO;
         }
 
-        protected override void DoActiveEffect(PlayerController user)
+        public override void DoActiveEffect(PlayerController user)
         {
             base.IsCurrentlyActive = false;
             user.ChangeSpecialShaderFlag(2, 0f);
@@ -115,7 +115,7 @@ namespace Blunderbeast
             yield break;
         }
 
-        protected override void OnPreDrop(PlayerController user)
+        public override void OnPreDrop(PlayerController user)
         {
             if (base.IsCurrentlyActive)
             {

@@ -49,7 +49,7 @@ namespace Blunderbeast
             base.Pickup(player);
         }
 
-        protected override void DoEffect(PlayerController user)
+        public override void DoEffect(PlayerController user)
         {
             AkSoundEngine.PostEvent("Play_OBJ_computer_boop_01", this.gameObject);
             GameManager.Instance.StartCoroutine(this.Misdirect());       

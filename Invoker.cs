@@ -50,7 +50,7 @@ namespace Blunderbeast
             base.Pickup(player);
         }
 
-        protected override void DoEffect(PlayerController user)
+        public override void DoEffect(PlayerController user)
         {
 
             AkSoundEngine.PostEvent("Play_WPN_deck4rd_shot_01", base.gameObject);

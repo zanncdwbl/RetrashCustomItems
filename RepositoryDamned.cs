@@ -366,7 +366,7 @@ namespace Blunderbeast
 
         private Gun lastGun;
 
-        protected override void Update()
+        public override void Update()
         {
             if (Owner)
             {

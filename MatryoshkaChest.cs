@@ -52,7 +52,7 @@ namespace Blunderbeast
         }
 
         //Removes one heart from the player, gives them 1 armor
-        protected override void DoEffect(PlayerController user)
+        public override void DoEffect(PlayerController user)
         {
             float curKeys = user.carriedConsumables.KeyBullets;
             if (curKeys > 0)

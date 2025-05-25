@@ -123,7 +123,7 @@ namespace Blunderbeast
         }
 
 
-        protected override void DoEffect(PlayerController user)
+        public override void DoEffect(PlayerController user)
         {
             if (user.HasPickupID(476))
             {

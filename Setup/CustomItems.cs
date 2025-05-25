@@ -1,21 +1,34 @@
-﻿using ItemAPI;
-using MonoMod.RuntimeDetour;
-using System;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using BepInEx;
+using ItemAPI;
+using MonoMod.RuntimeDetour;
 
 namespace Blunderbeast
 {
-    public class CustomItems : ETGModule
+    [BepInDependency("etgmodding.etg.mtgapi")]
+    [BepInPlugin("Retrash", "[Retrash's] Custom Items Collection", "5.0.2")]
+    public class CustomItems : BaseUnityPlugin
     {
-        public override void Init()
+        public const string GUID = "Retrash";
+        public const string NAME = "[Retrash's] Custom Items Collection";
+        public const string VERSION = "5.0.2";
+        public const string TEXT_COLOR = "#ffbf00";
+
+        public void Awake() {}
+
+        public void Start()
         {
+            ETGModMainBehaviour.WaitForGameManagerStart(new Action<GameManager>(this.GMStart));
         }
 
-        public override void Start()
+        public void GMStart(GameManager g)
         {
             FakePrefabHooks.Init();
             ItemBuilder.Init();
+            ETGMod.Assets.SetupSpritesFromFolder(Path.Combine(ETGMod.FolderPath(this), "sprites"));
             Blunderbeastblight.Init();
             Beastbloodinjection.Init();
             Panacea.Init();
@@ -49,7 +62,7 @@ namespace Blunderbeast
             LootBox.Init();
             WarVase.Init();
             WishCoupon.Init();
-            GravityGlove.Init();          
+            GravityGlove.Init();
             OrnatePistol.Add();
             GravityDisc.Add();
             Leafblower.Add();
@@ -65,199 +78,336 @@ namespace Blunderbeast
             FragGrenade.Init();
             IcySkull.Init();
             RepositoryDamned.Init();
-
-            //JOKE ITEMS
             BigRedButtonGag.Init();
             GrenadeOnAStick.Add();
-
-            Tools.Print<string>("Retrash's Custom Items Collection v" + CustomItems.version, "FFA500", true);
-
-            //CUSTOM SHOP POOLS SETUP
             ShopTool.Init();
-
-            //SYNERGY SETUP
-
-            Hook synergyStringHook = new Hook(
-                typeof(StringTableManager).GetMethod("GetSynergyString", BindingFlags.Public | BindingFlags.Static),
-                typeof(CustomItems).GetMethod("SynergyStringHook")
-            );
-
-
-            foreach (AdvancedSynergyEntry synergy in GameManager.Instance.SynergyManager.synergies)
+            Hook hook = new Hook(typeof(StringTableManager).GetMethod("GetSynergyString", BindingFlags.Static | BindingFlags.Public), typeof(CustomItems).GetMethod("SynergyStringHook"));
+            foreach (AdvancedSynergyEntry advancedSynergyEntry in GameManager.Instance.SynergyManager.synergies)
             {
-
-                if (synergy.NameKey == "#RECYCLING")
+                bool flag = advancedSynergyEntry.NameKey == "#RECYCLING";
+                if (flag)
                 {
-                    synergy.OptionalItemIDs.Add(ETGMod.Databases.Items["Recycloader"].PickupObjectId);
-
-                    if (synergy.MandatoryGunIDs.Contains(507))
+                    advancedSynergyEntry.OptionalItemIDs.Add(ETGMod.Databases.Items["Recycloader"].PickupObjectId);
+                    bool flag2 = advancedSynergyEntry.MandatoryGunIDs.Contains(507);
+                    if (flag2)
                     {
-                        synergy.MandatoryGunIDs.Remove(507);
+                        advancedSynergyEntry.MandatoryGunIDs.Remove(507);
                     }
-                    if (!synergy.OptionalItemIDs.Contains(507))
+                    bool flag3 = !advancedSynergyEntry.OptionalItemIDs.Contains(507);
+                    if (flag3)
                     {
-                        synergy.OptionalItemIDs.Add(507);
+                        advancedSynergyEntry.OptionalItemIDs.Add(507);
                     }
                 }
-
-                if (synergy.NameKey == "#MINORBLANKABLES1")
+                bool flag4 = advancedSynergyEntry.NameKey == "#MINORBLANKABLES1";
+                if (flag4)
                 {
-                    synergy.OptionalItemIDs.Add(ETGMod.Databases.Items["Barrier Ammolet"].PickupObjectId);
+                    advancedSynergyEntry.OptionalItemIDs.Add(ETGMod.Databases.Items["Barrier Ammolet"].PickupObjectId);
                 }
-
-                if (synergy.NameKey == "#RELODESTAR")
+                bool flag5 = advancedSynergyEntry.NameKey == "#RELODESTAR";
+                if (flag5)
                 {
-                    synergy.OptionalItemIDs.Add(ETGMod.Databases.Items["Barrier Ammolet"].PickupObjectId);
+                    advancedSynergyEntry.OptionalItemIDs.Add(ETGMod.Databases.Items["Barrier Ammolet"].PickupObjectId);
                 }
-
-                if (synergy.NameKey == "#CRISISROCK")
+                bool flag6 = advancedSynergyEntry.NameKey == "#CRISISROCK";
+                if (flag6)
                 {
-                    synergy.OptionalItemIDs.Add(ETGMod.Databases.Items["Barrier Ammolet"].PickupObjectId);
-
-                    if (synergy.MandatoryItemIDs.Contains(634))
+                    advancedSynergyEntry.OptionalItemIDs.Add(ETGMod.Databases.Items["Barrier Ammolet"].PickupObjectId);
+                    bool flag7 = advancedSynergyEntry.MandatoryItemIDs.Contains(634);
+                    if (flag7)
                     {
-                        synergy.MandatoryItemIDs.Remove(634);
+                        advancedSynergyEntry.MandatoryItemIDs.Remove(634);
                     }
-                    if (!synergy.OptionalItemIDs.Contains(634))
+                    bool flag8 = !advancedSynergyEntry.OptionalItemIDs.Contains(634);
+                    if (flag8)
                     {
-                        synergy.OptionalItemIDs.Add(634);
-                    }
-                }
-
-                if (synergy.NameKey == "#CEREBRAL_BROS")
-                {
-                    synergy.OptionalItemIDs.Add(ETGMod.Databases.Items["Mind Control Device"].PickupObjectId);
-                }
-
-                if (synergy.NameKey == "#PAPERWORK")
-                {
-                    synergy.OptionalItemIDs.Add(ETGMod.Databases.Items["Table Tech Stealth"].PickupObjectId);
-                }
-
-                if (synergy.NameKey == "#TWOEGGS")
-                {
-                    synergy.OptionalItemIDs.Add(ETGMod.Databases.Items["Crackling Egg"].PickupObjectId);
-
-                    if (synergy.MandatoryItemIDs.Contains(637))
-                    {
-                        synergy.MandatoryItemIDs.Remove(637);
-                    }
-                    if (!synergy.OptionalItemIDs.Contains(637))
-                    {
-                        synergy.OptionalItemIDs.Add(637);
+                        advancedSynergyEntry.OptionalItemIDs.Add(634);
                     }
                 }
-
-                if (synergy.NameKey == "#LEAFBUSTER")
+                bool flag9 = advancedSynergyEntry.NameKey == "#CEREBRAL_BROS";
+                if (flag9)
                 {
-                    synergy.OptionalGunIDs.Add(PickupObjectDatabase.GetByEncounterName("Verdant Blaster").PickupObjectId);
-
-                    if (synergy.MandatoryGunIDs.Contains(339))
+                    advancedSynergyEntry.OptionalItemIDs.Add(ETGMod.Databases.Items["Mind Control Device"].PickupObjectId);
+                }
+                bool flag10 = advancedSynergyEntry.NameKey == "#PAPERWORK";
+                if (flag10)
+                {
+                    advancedSynergyEntry.OptionalItemIDs.Add(ETGMod.Databases.Items["Table Tech Stealth"].PickupObjectId);
+                }
+                bool flag11 = advancedSynergyEntry.NameKey == "#TWOEGGS";
+                if (flag11)
+                {
+                    advancedSynergyEntry.OptionalItemIDs.Add(ETGMod.Databases.Items["Crackling Egg"].PickupObjectId);
+                    bool flag12 = advancedSynergyEntry.MandatoryItemIDs.Contains(637);
+                    if (flag12)
                     {
-                        synergy.MandatoryGunIDs.Remove(339);
+                        advancedSynergyEntry.MandatoryItemIDs.Remove(637);
                     }
-                    if (!synergy.OptionalGunIDs.Contains(339))
+                    bool flag13 = !advancedSynergyEntry.OptionalItemIDs.Contains(637);
+                    if (flag13)
                     {
-                        synergy.OptionalGunIDs.Add(339);
+                        advancedSynergyEntry.OptionalItemIDs.Add(637);
                     }
                 }
-
-                if (synergy.NameKey == "#IDOLHANDS")
+                bool flag14 = advancedSynergyEntry.NameKey == "#LEAFBUSTER";
+                if (flag14)
                 {
-                    
-                    synergy.OptionalItemIDs.Add(PickupObjectDatabase.GetByEncounterName("Exalted Armbow").PickupObjectId);
-
-                    if (synergy.MandatoryItemIDs.Contains(457))
+                    advancedSynergyEntry.OptionalGunIDs.Add(PickupObjectDatabase.GetByEncounterName("Verdant Blaster").PickupObjectId);
+                    bool flag15 = advancedSynergyEntry.MandatoryGunIDs.Contains(339);
+                    if (flag15)
                     {
-                        synergy.MandatoryItemIDs.Remove(457);
+                        advancedSynergyEntry.MandatoryGunIDs.Remove(339);
                     }
-                    if (!synergy.OptionalItemIDs.Contains(457))
+                    bool flag16 = !advancedSynergyEntry.OptionalGunIDs.Contains(339);
+                    if (flag16)
                     {
-                        synergy.OptionalItemIDs.Add(457);
+                        advancedSynergyEntry.OptionalGunIDs.Add(339);
                     }
                 }
-
-                if (synergy.NameKey == "#YETIDUNK")
+                bool flag17 = advancedSynergyEntry.NameKey == "#IDOLHANDS";
+                if (flag17)
                 {
-
-                    synergy.OptionalGunIDs.Add(PickupObjectDatabase.GetByEncounterName("Icy Skull").PickupObjectId);
-
-                    if (synergy.MandatoryGunIDs.Contains(387))
+                    advancedSynergyEntry.OptionalItemIDs.Add(PickupObjectDatabase.GetByEncounterName("Exalted Armbow").PickupObjectId);
+                    bool flag18 = advancedSynergyEntry.MandatoryItemIDs.Contains(457);
+                    if (flag18)
                     {
-                        synergy.MandatoryGunIDs.Remove(387);
+                        advancedSynergyEntry.MandatoryItemIDs.Remove(457);
                     }
-                    if (!synergy.OptionalGunIDs.Contains(387))
+                    bool flag19 = !advancedSynergyEntry.OptionalItemIDs.Contains(457);
+                    if (flag19)
                     {
-                        synergy.OptionalGunIDs.Add(387);
+                        advancedSynergyEntry.OptionalItemIDs.Add(457);
                     }
-
-                    if (synergy.MandatoryGunIDs.Contains(223))
+                }
+                bool flag20 = advancedSynergyEntry.NameKey == "#YETIDUNK";
+                if (flag20)
+                {
+                    advancedSynergyEntry.OptionalGunIDs.Add(PickupObjectDatabase.GetByEncounterName("Icy Skull").PickupObjectId);
+                    bool flag21 = advancedSynergyEntry.MandatoryGunIDs.Contains(387);
+                    if (flag21)
                     {
-                        synergy.MandatoryGunIDs.Remove(223);
+                        advancedSynergyEntry.MandatoryGunIDs.Remove(387);
                     }
-                    if (!synergy.OptionalGunIDs.Contains(223))
+                    bool flag22 = !advancedSynergyEntry.OptionalGunIDs.Contains(387);
+                    if (flag22)
                     {
-                        synergy.OptionalGunIDs.Add(223);
+                        advancedSynergyEntry.OptionalGunIDs.Add(387);
+                    }
+                    bool flag23 = advancedSynergyEntry.MandatoryGunIDs.Contains(223);
+                    if (flag23)
+                    {
+                        advancedSynergyEntry.MandatoryGunIDs.Remove(223);
+                    }
+                    bool flag24 = !advancedSynergyEntry.OptionalGunIDs.Contains(223);
+                    if (flag24)
+                    {
+                        advancedSynergyEntry.OptionalGunIDs.Add(223);
                     }
                 }
             }
-
-
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.VeryHungrySynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.SmeltingHardSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.TheTinyAndBigSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.StableDodgeciteRingSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.SmallAndStrong() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.ShopkeeperCapsuleSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.DeadlyBulletsSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.ChestFamilySynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.StormChargedSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.TheGoodSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.TheBadSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.SoulFiendSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.MagicTablesSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.BlankEnchanterSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.EvenSharperSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.WarBarrelSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.FourthWishSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.TrapperCardSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.YesRSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.InfinityGuontletSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.TheUglySynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.ArtemisSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.AlchemySynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.CardHeartSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.GForceSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.GreedyJarsSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.EggRollSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.FutureSightSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.TigerGenieSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.SoulTriggerSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.IceAgeSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.GoldenRatioSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.AngerIssuesSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.AbsoluteChaosSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.ArmorMaintenanceSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.FormerGlorySynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.RockPaperCrossBow() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.BatterUpSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.ChuckingNadesSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.RocketPitchSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.FreezePlusSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.FrozenCoreSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.BoneheadSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.ToolKitSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.PotceptionSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.AntiquatedSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.DendrologySynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.PlagueDoctorSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.ControllerSynergy() }).ToArray();
-            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new CustomSynergies.ChickenSeerSynergy() }).ToArray();
-
-
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.VeryHungrySynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.SmeltingHardSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.TheTinyAndBigSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.StableDodgeciteRingSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.SmallAndStrong()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.ShopkeeperCapsuleSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.DeadlyBulletsSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.ChestFamilySynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.StormChargedSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.TheGoodSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.TheBadSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.SoulFiendSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.MagicTablesSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.BlankEnchanterSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.EvenSharperSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.WarBarrelSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.FourthWishSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.TrapperCardSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.YesRSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.InfinityGuontletSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.TheUglySynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.ArtemisSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.AlchemySynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.CardHeartSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.GForceSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.GreedyJarsSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.EggRollSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.FutureSightSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.TigerGenieSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.SoulTriggerSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.IceAgeSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.GoldenRatioSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.AngerIssuesSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.AbsoluteChaosSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.ArmorMaintenanceSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.FormerGlorySynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.RockPaperCrossBow()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.BatterUpSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.ChuckingNadesSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.RocketPitchSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.FreezePlusSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.FrozenCoreSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.BoneheadSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.ToolKitSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.PotceptionSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.AntiquatedSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.DendrologySynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.PlagueDoctorSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.ControllerSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
+            GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[]
+            {
+                new CustomSynergies.ChickenSeerSynergy()
+            }).ToArray<AdvancedSynergyEntry>();
             SynergyFormInitialiser.AddSynergyForms();
+            Tools.Print<string>("[Retrash's] Custom Items Collection v5.0.2 started successfully.", "#ffbf00");
         }
-
 
         public static string SynergyStringHook(Func<string, int, string> action, string key, int index = -1)
         {
@@ -271,9 +421,7 @@ namespace Blunderbeast
 
         public bool isRetrashCollection;
 
-        private static string version = "5.0.1";
-
-        public override void Exit()
+        public void Exit()
         {
         }
     }

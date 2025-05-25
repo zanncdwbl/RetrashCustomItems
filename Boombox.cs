@@ -58,7 +58,7 @@ namespace Blunderbeast
 
         public bool boomboxactive;
 
-        protected override void DoEffect(PlayerController user)
+        public override void DoEffect(PlayerController user)
         {
             AkSoundEngine.PostEvent("Play_OBJ_plate_press_01", base.gameObject);
             string text;
@@ -249,7 +249,7 @@ namespace Blunderbeast
             }
         }
 
-        protected override void OnPreDrop(PlayerController user)
+        public override void OnPreDrop(PlayerController user)
         {
             boomboxactive = false;
             user.OnEnteredCombat -= HandleStunEffect;

@@ -85,7 +85,7 @@ namespace Blunderbeast
             player.healthHaver.damageTypeModifiers.Add(this.m_electricityImmunity);
         }
 
-        protected override void Update()
+        public override void Update()
         {
             if (Owner)
             {

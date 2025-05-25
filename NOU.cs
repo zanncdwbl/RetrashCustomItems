@@ -58,7 +58,7 @@ namespace Blunderbeast
             return debrisObject;
         }
 
-        protected override void Update()
+        public override void Update()
         {
             if (Owner)
             {

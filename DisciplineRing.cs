@@ -132,7 +132,7 @@ namespace Blunderbeast
 
         private void DodgeFail(PlayerController player)
         {
-            if (disciplineLevel >= 1 && player.IsInCombat)
+            if (disciplineLevel >= 1 && player.IsInCombat && NoDodge)
             {
                 disciplineLevel -= 1;
                 AkSoundEngine.PostEvent("Play_OBJ_metronome_fail_01", this.gameObject);

@@ -58,7 +58,7 @@ namespace Blunderbeast
         }
 
 
-        protected override void Update()
+        public override void Update()
         {
             if (Owner)
             {
@@ -116,7 +116,7 @@ namespace Blunderbeast
             return debrisObject;
         }
 
-        protected override void OnDestroy()
+        public override void OnDestroy()
         {
             if (Owner)
             {
